@@ -3,7 +3,7 @@ Magento 2.2 Extention for Extended Custom Product Options supports Image Uploads
 
 To Install:
 
-Create a new folder inside the 'app' folder called Evil, create another folder inside 'Evil' folder called 'Custom'. Dump all the files inside '/app/Evil/Custom/'
+Create a new folder inside the 'app' folder called 'Evil', create another folder inside 'Evil' folder called 'Custom'. Dump all the files inside '/app/Evil/Custom/'
 
 Go to Command Line and in the root folder of Magento, enter 'php bin/magento setup:upgrade'
 
