@@ -11,6 +11,9 @@ Now log into the Admin (CMS). Go to 'Catalog > Products' , Select or Add a Produ
 
 I hope the instructions are good enough. You might have to reload the Product Detail Edit page the first time because of the Caching.
 
+Front-End: 
+ On the Product Details Page, the Variable 'EvilCustomOptions' is an array that contains all the new Custom Options, it has been added to the Product Data and can be accessed using  $this->_view->getProduct()->getData('EvilCustomOptions');
+
 Let me know if you have prolems.
 GL.
 -David
