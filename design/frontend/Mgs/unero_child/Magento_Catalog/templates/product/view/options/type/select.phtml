@@ -1,0 +1,58 @@
+<?php
+/**
+ * Copyright © 2013-2017 Magento, Inc. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+
+// @codingStandardsIgnoreFile
+
+?>
+
+<?php /* @var $block \Magento\Catalog\Block\Product\View\Options\Type\Select */ ?>
+<?php
+$_option = $block->getOption();
+$_option_id = $_option->getId();
+$class = ($_option->getIsRequire()) ? ' required' : '';
+$_product = $block->getProduct();
+$customOption = $_product->getData('EvilCustomOptions');
+$ctm_parentables = $block->getProduct()->getData('ctm_parentables');
+$nextOption = getnext($customOption, $_option_id);
+$hasChild = (!empty($nextOption['parentable'])) ? true : false;
+$isChild = (!empty($customOption[$_option_id]['parentable'])) ? true : false;
+?>
+<?php if($isChild === false) :?>
+<div id="<?php echo $_option_id;?>" class="<?php echo ($_product->getCustomCreator()) ? 'creator-config': '';?> field<?php /* @escapeNotVerified */ echo $class; ?>">
+    <?php if ($_product->getCustomCreator()) :?>
+    <a href="#info" class="creator-info" data-toggle="modal" data-target="#creator-modal"><i class="fa fa-info-circle" aria-hidden="true"></i></a>
+    <?php endif?>
+    <h2 for="select_<?php /* @escapeNotVerified */ echo $_option_id; ?>">
+      <?php if(!empty($customOption[$_option_id]['icon'])) :?>
+        <span class="icon"><img src="/media/<?php echo $customOption[$_option_id]['icon'];?>" class="img-responsive" alt="<?php echo  $customOption[$_option_id]['headline'] ?>" /></span>
+      <?php endif ?>
+        <span class="title"><?php echo $customOption[$_option_id]['headline']; ?></span>
+    </h2>
+<?php endif ?>
+    <?php if($isChild === true):?>
+    <div class="grouped">
+        <h4 for="select_<?php /* @escapeNotVerified */ echo $_option_id; ?>">
+            <span class="title"><?php echo $customOption[$_option_id]['headline']; ?></span>
+        </h4>
+    <?php else :?>
+    <div class="control" data-status="0">
+    <?php endif ?>
+        <?php if ($customOption[$_option_id]['description']): ?>
+        <p class="info"><?php echo  $customOption[$_option_id]['description']; ?></p>
+        <?php endif ?>
+        <?php echo $block->getValuesHtml() ?>
+        <?php if ($_option->getIsRequire()): ?>
+            <?php if ($_option->getType() == \Magento\Catalog\Model\Product\Option::OPTION_TYPE_RADIO || $_option->getType() == \Magento\Catalog\Model\Product\Option::OPTION_TYPE_CHECKBOX): ?>
+                <span id="options-<?php /* @escapeNotVerified */ echo $_option_id ?>-container"></span>
+            <?php endif; ?>
+        <?php endif;?>
+        <?php if ($customOption[$_option_id]['promo']): ?>
+        <p class="info"><?php echo  $customOption[$_option_id]['promo']; ?></p>
+        <?php endif ?>
+    </div>
+<?php if($hasChild === false) :?>
+</div>
+<?php endif ?>

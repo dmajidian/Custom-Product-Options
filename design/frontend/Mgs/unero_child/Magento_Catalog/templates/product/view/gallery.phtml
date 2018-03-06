@@ -1,0 +1,403 @@
+<?php
+/**
+ * Copyright © 2015 Magento. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+
+// @codingStandardsIgnoreFile
+
+/**
+ * Product media data template
+ *
+ * @var $block \Magento\Catalog\Block\Product\View\Gallery
+ */
+function getnext($array, $key) {
+    if(empty($array)) return null;
+    $current = key($array);
+    while ($current !== null && $current != $key) {
+        next($array);
+        $current = key($array);
+    }
+    return next($array);
+}
+?>
+<?php $themeHelper = $this->helper('MGS\Mpanel\Helper\Data'); ?>
+<?php $_imagehelper = $this->helper('Magento\Catalog\Helper\Image'); ?>
+<?php $padding = $themeHelper->getImagePadding(); ?>
+<?php $_product = $block->getProduct(); ?>
+<?php $galleryImages = $block->getGalleryImages() ?>
+<?php $checkVideo = false; ?>
+<?php $countVideo = 0; ?>
+<?php foreach($galleryImages as $image): ?>
+    <?php if($image->getMediaType() == 'external-video'): ?>
+        <?php $checkVideo = true; ?>
+        <?php $countVideo++; ?>
+    <?php endif ?>
+<?php endforeach ?>
+
+<?php // Image 360 ?>
+<?php $rotateImage = $_product->getData('mgs_j360') ?>
+<?php $rotateImages = [] ?>
+<?php if($rotateImage): ?>
+	<?php $rotateImages = $themeHelper->getRotateImages($_product->getId()) ?>
+<?php endif ?>
+
+<div class="product-info-media">
+    <?php if(empty($_product->getCustomCreator())) : ?>
+    <div class="product media" style="padding-bottom: <?php echo $padding; ?>;">
+        <?php if(!count($galleryImages)): ?>
+            <?php // Product no image ?>
+            <div class="placeholder-images">
+                <img class="img-responsive" src="<?php echo $_imagehelper->init($_product, 'category_page_list')->getUrl(); ?>" alt=""/>
+            </div>
+        <?php else: ?>
+            <?php // Product Gallery ?>
+            <div class="vertical-thumbnail">
+
+                <?php // Vertical Thumbnail ?>
+                <?php if(count($galleryImages) > 1): ?>
+                    <div class="parent__gallery-thumbnail">
+                        <div class="product-gallery-carousel gallery-thumbnail slick-thumbnail">
+                            <?php $pos = 0; foreach($galleryImages as $image): ?>
+                                <?php if($pos == 0): ?>
+                                    <?php $imagePlace = $image->getMediumImageUrl(); ?>
+                                <?php endif ?>
+                                <?php if($image->getIsBaseImage()): ?>
+                                    <?php $imagePlace = $image->getMediumImageUrl(); ?>
+                                <?php endif ?>
+                                <?php if($image->getMediaType() != 'external-video'): ?>
+                                    <div class="item">
+                                        <div class="image-item<?php if($image->getIsBaseImage()): ?> base-image active<?php endif ?>" data-owlmove="<?php echo $pos; ?>">
+                                            <img class="img-responsive" src="<?php echo $image->getMediumImageUrl(); ?>" alt="<?php echo $image->getLabel(); ?>"/>
+                                        </div>
+                                    </div>
+                                    <?php $pos++; ?>
+                                <?php endif ?>
+                            <?php endforeach ?>
+                            <?php if($checkVideo): ?>
+                                <div class="item"><div class="image-item">
+                                    <a class="video-gallery-button" href="#" title="<?php echo __('Watch Video'); ?>">
+                                        <img class="img-responsive" src="<?php echo $imagePlace ?>" alt="<?php echo __('Watch Video'); ?>"/>
+                                    </a>
+                                </div></div>
+                            <?php endif ?>
+                        </div>
+                    </div>
+
+                    <script type="text/javascript">
+                        require([
+                            'jquery',
+                            'mgs/slick'
+                        ], function ($) {
+                            $('.slick-thumbnail').slick({
+                                dots: false,
+                                arrows: true,
+                                vertical: true,
+                                slidesToShow: 5,
+                                slidesToScroll: 5,
+                                verticalSwiping: true,
+                                prevArrow: '<span class="pe-7s-angle-up"></span>',
+                                nextArrow: '<span class="pe-7s-angle-down"></span>',
+                                responsive: [
+                                    {
+                                        breakpoint: 1199,
+                                        settings: {
+                                            slidesToShow: 3,
+                                            slidesToScroll: 3
+                                        }
+                                    },
+                                    {
+                                        breakpoint: 991,
+                                        settings: {
+                                            slidesToShow: 2,
+                                            slidesToScroll: 2
+                                        }
+                                    },
+                                    {
+                                        breakpoint: 360,
+                                        settings: {
+                                            slidesToShow: 1,
+                                            slidesToScroll: 1
+                                        }
+                                    }
+                                ]
+                            });
+                        });
+                    </script>
+                <?php endif ?>
+
+                <?php //Main Image - No video ?>
+                <div class="product-main-media-product">
+                    <div class="product-image-base">
+                        <div class="product-gallery-base-carousel owl-carousel">
+                            <?php foreach($galleryImages as $image): ?>
+                                <?php if($image->getMediaType() != 'external-video'): ?>
+                                    <?php if($image->getLabel()): ?>
+                                        <?php $title_image = $image->getLabel(); ?>
+                                    <?php else: ?>
+                                        <?php $title_image = $_product->getName(); ?>
+                                    <?php endif ?>
+                                    <div class="item">
+                                        <a title="<?php echo $title_image; ?>" href="<?php echo $image->getLargeImageUrl(); ?>">
+                                            <img class="img-responsive" src="<?php echo $image->getLargeImageUrl(); ?>" alt="<?php echo $image->getLabel(); ?>"/>
+                                        </a>
+                                    </div>
+                                <?php endif ?>
+                            <?php endforeach ?>
+                        </div>
+                    </div>
+                </div>
+
+                <script type="text/javascript">
+                    require([
+                        'jquery',
+                        'mgs/owlcarousel'
+                    ], function(jQuery){
+                        (function($) {
+                            $(".product-gallery-base-carousel").owlCarousel({
+                                items: 1,
+                                loop: true,
+                                nav: true,
+                                dots: false,
+                                autoplay: false,
+                                autoplayHoverPause: false,
+                                navText: ["<i class='pe-7s-angle-left'></i>","<i class='pe-7s-angle-right'></i>"],
+                                rtl: RTL,
+                                responsive:{
+                                    0:{
+                                        nav: false,
+                                        dots: true
+                                    },
+                                    768:{
+                                        nav: true,
+                                        dots: false
+                                    }
+                                },
+                            });
+                        })(jQuery);
+                    });
+
+                    require([
+                        'jquery',
+                        'magnificPopup'
+                    ], function(jQuery){
+                        (function($) {
+                            $(document).ready(function() {
+                                $('.product-gallery-base-carousel').magnificPopup({
+                                    delegate: '.owl-item:not(.cloned) a',
+                                    type: 'image',
+                                    tLoading: 'Loading image #%curr%...',
+                                    mainClass: 'mfp-img-gallery',
+                                    fixedContentPos: true,
+                                    gallery: {
+                                        enabled: true,
+                                        navigateByImgClick: true,
+                                        preload: [0,1]
+                                    },
+                                    image: {
+                                        tError: '<a href="%url%">The image #%curr%</a> could not be loaded.',
+                                        titleSrc: function(item) {
+                                        return item.el.attr('title');
+                                        }
+                                    }
+                                });
+                            });
+                        })(jQuery);
+                    });
+                </script>
+            </div>
+        <?php endif ?>
+    </div>
+
+
+    <?php // Image 360 ?>
+    <?php if($rotateImage && (count($rotateImages)>0)): ?>
+        <a class="rotate-image" href="#" onclick="rotate360(); return false"></a>
+        <script type="text/javascript">
+            function rotate360(){
+                require([
+                    'jquery',
+                    "mage/translate",
+                    'rotateImage'
+                ], function ($) {
+                    $.ajax({
+                        url: '<?php echo $this->getUrl('mpanel/index/rotate') ?>',
+                        data: ('&product=<?php echo $_product->getId() ?>'),
+                        type: 'get',
+                        dataType: 'json',
+                        cache: true,
+                        showLoader: true
+                    }).done(function (response) {
+                        $('.loading-mask').append(response.html);
+                        $('.loading-mask').addClass('j360-container');
+                        setTimeout(initImageRotate, 1);
+
+                    }).fail(function (error) {
+                        alert($.mage.__('Sorry, something went wrong. Please try again later.'));
+                    });
+                });
+            }
+
+            function initImageRotate(){
+                require([
+                    'jquery',
+                    "mage/translate",
+                    'rotateImage'
+                ], function ($) {
+                    $('.loading-mask').show();
+                    $('#mgs_j360').j360();
+                });
+            }
+
+            function closeRotateContainer(){
+                require([
+                    'jquery',
+                    "mage/translate",
+                    'rotateImage'
+                ], function ($) {
+                    $('.rotate-image-container').remove();
+                    $('.loading-mask').removeClass('j360-container');
+                    $('.loading-mask').hide();
+                    $('.preload_img').parent().remove();
+                });
+            }
+        </script>
+    <?php endif ?>
+
+
+    <?php // Product Gallery Video ?>
+    <?php if($checkVideo): ?>
+        <div class="product-main-media-product-video">
+            <button class="toglle-video-button"><span><?php echo __('More Video'); ?></span></button>
+            <div class="product-gallery-video owl-carousel">
+                <?php $i = 0; foreach($galleryImages as $image): ?>
+                    <?php if($image->getMediaType() == 'external-video'): ?>
+                        <div class="item">
+                            <a data-index="<?php echo $i ?>" title='<?php echo str_replace("'",'"',$image->getVideoTitle()); ?>' href="<?php echo $image->getVideoUrl(); ?>">
+                                <img class="img-responsive" src="<?php echo $image->getMediumImageUrl(); ?>" alt="<?php echo $image->getLabel(); ?>"/>
+                            </a>
+                        </div>
+                        <?php $i++ ?>
+                    <?php endif ?>
+                <?php endforeach ?>
+            </div>
+        </div>
+        <script type="text/javascript">
+            require([
+                'jquery',
+                'magnificPopup'
+            ], function(jQuery){
+                (function($) {
+                    $(document).ready(function() {
+                        $('.video-gallery-button').on('click', function () {
+                            $('.product-gallery-video').magnificPopup('open');
+                        });
+
+                        $('.product-gallery-video').magnificPopup({
+                            delegate: '.owl-item:not(.cloned) a',
+                            type: 'iframe',
+                            tLoading: 'Loading video #%curr%...',
+                            mainClass: 'mfp-img-gallery',
+                            fixedContentPos: true,
+                            gallery: {
+                                enabled: true,
+                                navigateByImgClick: true,
+                                preload: [0,1]
+                            }
+                            <?php if($countVideo > 1): ?>,
+                            callbacks: {
+                                open: function() {
+                                    $(".product-main-media-product-video").detach().appendTo(".mfp-iframe-scaler");
+                                    setTimeout(function(){ $(".product-main-media-product-video").addClass('move-down'); }, 5000);
+                                    $.magnificPopup.instance.close = function () {
+                                        $(".product-main-media-product-video").detach().appendTo(".product-info-media");
+                                        $.magnificPopup.proto.close.call(this);
+                                    };
+                                },
+                            }
+                            <?php endif ?>
+                        });
+
+                        $('.parent__gallery-thumbnail .video-gallery-button').on('click', function () {
+                            $('.product-gallery-video').magnificPopup('open');
+
+                            return false;
+                        });
+                    });
+                })(jQuery);
+            });
+        </script>
+        <script type="text/javascript">
+            require([
+                'jquery',
+                'mgs/owlcarousel'
+            ], function(jQuery){
+                (function($) {
+                    $(".product-gallery-video").owlCarousel({
+                        items: 2,
+                        loop: false,
+                        nav: true,
+                        dots: false,
+                        autoplay: false,
+                        autoplayHoverPause: false,
+                        rtl: RTL,
+                        navText: ["<i class='pe-7s-angle-left'></i>","<i class='pe-7s-angle-right'></i>"]
+                    });
+                    <?php if($countVideo > 1): ?>
+                        $(document).on("click",".product-gallery-video a",function(e){
+                            var posJumb = $(this).data('index');
+                            $('.product-gallery-video').magnificPopup('goTo', posJumb);
+                        });
+
+                        $(document).on("click",".toglle-video-button",function(e){
+                            $(this).parent().toggleClass('move-down');
+                        });
+                    <?php endif ?>
+                })(jQuery);
+            });
+
+        </script>
+        <?php endif ?>
+    <?php else :?>
+      <?php
+      //Custom Creator Gallery
+      $imagesJson = $block->getGalleryImagesJson();
+      $images = json_decode($imagesJson);
+      $_options = $_product->getOptions();
+      $_customOptions = $_product->getData('EvilCustomOptions');
+      $_first = 0;
+      ?>
+      <?php if(!empty($images) && !empty($_customOptions)): ?>
+      <div id="custom-creator-gallery" data-option="<?php echo count($_options);?>">
+        <?php if(!empty($_customOptions)): ?>
+        <div id="custom-creator-components" class="d-flex justify-content-around type-<?php echo count($_options);?>">
+          <?php foreach($_customOptions as $key => $opt): ?>
+          <?php if(empty($opt['parentable'])) :?>
+          <div class="option<?php echo ($_first==0)?' active':'';?>" data-view="<?php echo $opt['switch'];?>"><span><img class="img-responsive" src="/media/<?php echo $opt['icon'];?>" /></span></div>
+          <?php $_first++;?>
+          <?php endif ?>
+          <?php endforeach ?>
+        </div>
+        <?php endif ?>
+    		<div class="custom-creator-container" >
+          <!-- Front View -->
+          <?php if(!empty($images[0])): ?>
+          <div id="custom-creator-front-view" class="controller-view is-visible">
+            <img src="<?php echo $images[0]->full; ?>" id="creator-front-image" class="img-responsive center-block"/>
+            <div class="components"></div>
+          </div>
+          <?php endif ?>
+          <?php if(!empty($images[1])): ?>
+          <!-- Back View -->
+          <div id="custom-creator-back-view" class="controller-view">
+            <img src="<?php echo $images[1]->full; ?>" id="creator-back-image" class="img-responsive center-block"/>
+            <div class="components"></div>
+          </div>
+          <?php endif ?>
+        </div>
+        <div id="controller-switch"><span class="glyphicon glyphicon-refresh" data-view="back"></span></div>
+      </div>
+      <?php endif ?>
+
+    <?php endif ?>
+</div>
